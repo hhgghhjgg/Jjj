@@ -46,16 +46,28 @@ async def send_location_update(context: ContextTypes.DEFAULT_TYPE, player_id: in
         await context.bot.send_message(chat_id, text, parse_mode='HTML', reply_markup=keyboard)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """دستور /start را مدیریت می‌کند و بازیکن را وارد بازی می‌کند."""
     user = update.effective_user
     player_data = database.get_player(user.id)
     
     if not player_data:
-        player_data = database.create_player(user.id, user.first_name, game_data.STARTING_LOCATION, game_data.DEFAULT_HP)
-        await update.message.reply_text(f"سلام {user.first_name}! به دنیای تهذیب و جادو خوش آمدی.")
+        # --- مشکل اینجا بود: ارسال تمام مقادیر لازم ---
+        start_x, start_y = game_data.STARTING_COORDS
+        start_region, _ = get_region_from_coords(start_x, start_y)
+        xp_next = game_data.xp_for_level(1)
+        
+        database.create_player(
+            user_id=user.id, 
+            name=user.first_name, 
+            location=start_region, 
+            x=start_x, 
+            y=start_y, 
+            max_hp=game_data.DEFAULT_HP,
+            xp_to_next_level=xp_next
+        )
+        await update.message.reply_text(f"سلام {user.first_name}! به دنیای سیستم خوش آمدی.")
         
     await send_location_update(context, player_id=user.id, chat_id=update.effective_chat.id)
-
+    await check_quests(context, user.id, update.effective_chat.id, 'login')
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """تمام کلیک‌های روی دکمه‌ها را پردازش می‌کند."""
     query = update.callback_query
