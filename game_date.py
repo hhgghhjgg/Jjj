@@ -1,46 +1,34 @@
 # file: game_data.py
 
-# ... (داده‌های نقشه و مناطق مانند قبل باقی می‌مانند)
-WORLD_WIDTH = 50
-WORLD_HEIGHT = 50
-STARTING_COORDS = (25, 25)
+CULTIVATOR_RANKS = [(0, 'شاگرد مبتدی'), (100, 'استاد رزمی'), (300, 'فرمانروای آسمانی')]
+MAGE_RANKS = [(0, 'شاگرد جادو'), (120, 'ساحر'), (350, 'ساحر اعظم')]
+STARTING_LOCATION = 'دره شروع'
 DEFAULT_HP = 100
 
-def xp_for_level(level):
-    """فرمول محاسبه XP مورد نیاز برای سطح بعدی."""
-    return int(100 * (level ** 1.5))
+# نقشه شهر آسمانی (شبکه ۵x۵)
+celestial_city_map = {}
+CITY_SIZE = 5
+for x in range(CITY_SIZE):
+    for y in range(CITY_SIZE):
+        celestial_city_map[(x, y)] = {'description': f'شما روی گذرگاه ابری در بخش ({x}, {y}) از شهر آسمانی قدم می‌زنید.'}
 
-# تعریف ماموریت‌ها
-QUESTS = {
-    'first_steps': {
-        'title': 'اولین قدم‌ها',
-        'description': 'برای شروع ماجراجویی، ۱۰ متر در دنیای بازی حرکت کن.',
-        'trigger': {'type': 'level', 'value': 1},
-        'objective': {'type': 'move', 'count': 10},
-        'reward': {'xp': 50, 'stat_points': 1}
-    },
-    'forest_exploration': {
-        'title': 'اکتشاف جنگل',
-        'description': 'وارد جنگل تاریک شو و خود را به کلبه متروکه برسان.',
-        'trigger': {'type': 'level', 'value': 2},
-        'objective': {'type': 'reach_coord', 'coords': (35, 25)},
-        'reward': {'xp': 100, 'items': ['معجون سلامتی کوچک']}
-    }
-}
+# اضافه کردن مکان‌های خاص به شهر
+celestial_city_map[(2, 2)] = {'description': 'میدان مرکزی شهر آسمانی. یک پاگودای زیبا در مرکز آن قرار دارد.'}
+celestial_city_map[(0, 4)] = {'description': 'مدرسه تهذیب کنندگان ابر سفید.'}
+celestial_city_map[(4, 0)] = {'description': 'برج ستاره‌شناسان، مکانی برای مطالعه جادو.'}
 
-regions = {
-    'دشت‌های آرامش': {
-        'bounds': (20, 30, 20, 30),
-        'base_description': 'شما در دشت‌های وسیع و آرامش‌بخش قدم می‌زنید.',
-        'special_locations': {
-            (25, 25): 'نقطه شروع. یک سنگ باستانی در این نقطه قرار دارد.'
-        }
+locations = {
+    'دره شروع': {
+        'description': 'شما در دره‌ای آرام و سرسبز هستید. در مقابل شما دو مسیر قرار دارد که سرنوشت شما را رقم خواهد زد.',
+        'exits': {}
     },
-    'جنگل تاریک': {
-        'bounds': (31, 40, 20, 30),
-        'base_description': 'شما وارد جنگلی تاریک و انبوه شده‌اید.',
-        'special_locations': {
-            (35, 25): 'یک کلبه متروکه. به نظر می‌رسد سال‌هاست کسی اینجا زندگی نکرده.'
-        }
+    'شهر آسمانی': celestial_city_map,
+    'قله اژدهای خفته': {
+        'description': 'مکانی مقدس برای تهذیب کنندگان. گفته می‌شود انرژی چی در این مکان بسیار قدرتمند است.',
+        'exits': {'جنوب': 'شهر آسمانی'}
+    },
+    'کتابخانه گمشده': {
+        'description': 'کتابخانه‌ای کهن که در آن طومارهای جادویی نابی پیدا می‌شود. بهترین مکان برای تمرکز مانا.',
+        'exits': {'غرب': 'شهر آسمانی'}
     }
 }
